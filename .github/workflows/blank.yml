@@ -10,9 +10,10 @@ jobs:
     runs-on: ubuntu-22.04
     
     steps:
-      - name: Checkout Repository
+      - name: Checkout Kernel Repository
         uses: actions/checkout@v4
         with:
+          repository: Halk56855/android_kernel_samsung_a04m
           ref: latest-B
 
       - name: Set up Build Environment & Dependencies
