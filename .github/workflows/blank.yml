@@ -10,13 +10,10 @@ jobs:
     runs-on: ubuntu-22.04
     
     steps:
-      - name: Checkout Workflow Repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Clone Official Kernel Source
-        run: |
-          rm -rf * .git
-          git clone -b latest-B https://github.com/rsuntk-oss/android_kernel_samsung_a04m.git .
+        with:
+          ref: latest-B
 
       - name: Set up Build Environment & Dependencies
         run: |
@@ -67,8 +64,8 @@ jobs:
             
             echo "تم حقن كسر سرعة المعالج (2.6 GHz و 2.1 GHz) ومعالج الرسوميات (900 MHz) بنجاح."
             
-            # بدء التجميع باستخدام مسار ملف التهيئة المكتشف
-            make O=out ARCH=arm64 "$DEFCONFIG_PATH"
+            # بدء التجميع باستخدام اسم الملف المكتشف تلقائياً
+            make O=out ARCH=arm64 "$DEFCONFIG_NAME"
             
             make -j$(nproc --all) O=out \
               ARCH=arm64 \
