@@ -36,7 +36,7 @@ jobs:
           echo "PATH=$CLANG_PATH:$PATH" >> $GITHUB_ENV
           echo "CC=clang" >> $GITHUB_ENV
 
-      - name: Apply Tweaks and Compile Kernel
+      - name: Apply Exact CPU/GPU Overclock & Network Tweaks
         run: |
           mkdir -p out
           DEFCONFIG_PATH=$(find . -name "a04_defconfig" | head -n 1)
@@ -45,15 +45,25 @@ jobs:
             echo "تم العثور على ملف التهيئة بنجاح في: $DEFCONFIG_PATH"
             DEFCONFIG_NAME=$(basename "$DEFCONFIG_PATH")
             
-            # تفعيل خوارزمية BBR وتحسينات الشبكة والواي فاي
+            # 1. تفعيل خوارزمية BBR وتحسينات الشبكة والواي فاي
             echo "CONFIG_TCP_CONG_BBR=y" >> "$DEFCONFIG_PATH"
             echo "CONFIG_DEFAULT_BBR=y" >> "$DEFCONFIG_PATH"
             echo "CONFIG_NET_SCH_FQ=y" >> "$DEFCONFIG_PATH"
             echo "CONFIG_DEFAULT_NET_SCH=\"fq\"" >> "$DEFCONFIG_PATH"
             
-            echo "تم حقن تعديلات الشبكة وأقصى أداء بنجاح."
+            # 2. تفعيل الأداء الفائق ومنع خفض الترددات
+            echo "CONFIG_CPU_FREQ_DEFAULT_GOV_PERF=y" >> "$DEFCONFIG_PATH"
+            echo "CONFIG_SCHED_SMT=y" >> "$DEFCONFIG_PATH"
             
-            # بدء التجميع باستخدام الملف المكتشف مباشرة
+            # 3. تعديل ترددات المعالج والـ GPU في ملفات الكيرنل (بالهرتز)
+            # استبدال قيم الترددات القديمة بالقيم القصوى الجديدة المطلوبة
+            find . -type f \( -name "*.dts" -o -name "*.dtsi" -o -name "*.c" \) -exec sed -i 's/2300000000/2600000000/g' {} +
+            find . -type f \( -name "*.dts" -o -name "*.dtsi" -o -name "*.c" \) -exec sed -i 's/1800000000/2100000000/g' {} +
+            find . -type f \( -name "*.dts" -o -name "*.dtsi" -o -name "*.c" \) -exec sed -i 's/680000000/900000000/g' {} +
+            
+            echo "تم حقن كسر سرعة المعالج (2.6 GHz و 2.1 GHz) ومعالج الرسوميات (900 MHz) بنجاح."
+            
+            # بدء التجميع باستخدام الملف المكتشف
             make O=out ARCH=arm64 "$DEFCONFIG_NAME"
             
             make -j$(nproc --all) O=out \
