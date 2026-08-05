@@ -17,7 +17,7 @@ on:
         required: true
       DEFCONFIG:
         description: Defconfig
-        default: 'a04_defconfig'
+        default: 'rsuntk-a04_defconfig'
         required: true
       CLANG_SIXTEEN:
         description: Use clang 16
@@ -104,7 +104,8 @@ jobs:
         export DEVICE="A055F"
         export TARGET_PRODUCT=a05
         
-        # تحديث تعريفات الاتصال و Wi-Fi المخصصة لنواة 4.19[span_1](start_span)[span_1](end_span)
+        # تجاوز مشاكل المصادقة للـ Git واستنساخ موديول الاتصال
+        git config --global url."https://github.com/".insteadOf git@github.com:
         rm -rf drivers/misc/mediatek/connectivity && cd drivers/misc/mediatek/ && git clone https://github.com/rsuntkOrgs/mtk_connectivity_module --depth=1 -b staging-4.19 connectivity && rm -rf connectivity/.git && cd ../../..
         
         if [[ "${{ github.event.inputs.SELINUX_PERMISSIVE }}" = "true" ]]; then
