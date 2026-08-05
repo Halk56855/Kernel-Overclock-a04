@@ -1,4 +1,4 @@
-name: Build Kernel
+Name: Build Kernel
 on:
   workflow_dispatch:
     inputs:
@@ -48,10 +48,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        repository: rsuntk-oss/android_kernel_samsung_a04m
         path: kernel_root
         ref: ${{ github.event.inputs.BRANCH }}
         show-progress: false
-        fetch-depth: 1
+        fetch-depth: 0
         
     - name: Prepare dependencies
       run: |
