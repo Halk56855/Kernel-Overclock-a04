@@ -1,4 +1,4 @@
-name: Build Kernel
+Name: Build Kernel
 on:
   workflow_dispatch:
     inputs:
@@ -117,7 +117,7 @@ jobs:
           echo "CONFIG_MISC_OPT_OVERCLOCK=y" >>  arch/arm64/configs/$DEFCONFIG
         fi
         
-        bash $(pwd)/build.sh kernel --jobs `nproc --all` `echo $DEFCONFIG`
+        bash $(pwd)/build_kernel.sh kernel --jobs `nproc --all` `echo $DEFCONFIG`
         if [[ ${{ github.event.inputs.KSU }} = "true" ]]; then
         	KSU_REV_COUNT=$(cd KernelSU && git rev-list --count HEAD)
         	KSU_VERSION=$(expr 10200 + $KSU_REV_COUNT)
